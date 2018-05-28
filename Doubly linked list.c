@@ -2,13 +2,13 @@
 #include<stdlib.h>
 struct node{
 	int info;
-	struct node * next;
+	struct node *prev, *next;
 };
-void display(struct node *p);
+struct node * display(struct node *p);
 struct node * insertbeg(struct node *p,int x);
 struct node * insertafter(struct node *p,int x,int y);
 struct node * insertend(struct node *p,int x);
-void delbeg(struct node *p);
+struct node * delbeg(struct node *p);
 struct node * delend(struct node *p);
 struct node * delnode(struct node *q,int x);
 struct node * getnode(int x);
@@ -18,7 +18,7 @@ main()
  head=NULL;
  int ch,x,y;
 	do{
-		printf("Enter user choice:1)Insert at beginning\n2)Insert After\n3)Insert at end\n4)Delete from beginning\n5)Delete a particular node\n6)Delete end7)Exit\n");
+		printf("Enter user choice:1)Insert at beginning\n2)Insert After\n3)Insert at end\n4)Delete from beginning\n5)Delete a particular node\n6)Delete end\n7)Display\n8)xit\n");
 		scanf("%d",&ch);
 		switch(ch)
 		{
@@ -35,16 +35,22 @@ main()
 			case 3:printf("Enter element to be inserted:");
 			       scanf("%d",&x);
 			       head=insertend(head,x);
-			case 4:delbeg(head);
+			       break;
+			case 4:head=delbeg(head);
+			       break;
 			case 5:printf("Enter element to be deleted:");
 			       scanf("%d",&x);
-			       delnode(head,x);
-		    case 6:delend(head);      
-		  	case 7:break;
+			       head=delnode(head,x);
+			       break;
+		    case 6:head=delend(head);
+			       break;      
+		  	case 7:head=display(head);
+			       break;
+			case 8:break;
 		}
-	}while(ch!=7);	
+	}while(ch!=8);	
 }
-void display(struct node *head)
+struct node * display(struct node *head)
 {
 	struct node *p;
 	p=head;
@@ -53,30 +59,33 @@ void display(struct node *head)
 		printf("%d\n",p->info);
 		p=p->next;
 	}
+	return head;
 }
 struct node * insertbeg(struct node *head,int x){
 	struct node *q;
 	q=getnode(x);
+	if(head==NULL)
+	{
+		head=q;
+	}else{
 	q->next=head;
+	head->prev=q;
 	head=q;
+	}
 	return head;
 }
 struct node * insertafter(struct node *head,int x,int y){
 	struct node *p,*q;
 	q=getnode(x);
 	p=head;
-	while(p->info!=y||p!=NULL)
+	while(p->info!=y)
 	{
 		p=p->next;
-	}
-	if(p==NULL){
-		printf("Element not found");
-		return head;
-	}else{
-	  q->next=p->next;
-	  p->next=q;
-	  return  head;	
-	}
+    }
+	q->next=p->next;
+	q->prev=p;
+	p->next=q;
+	return head;
 }
 struct node * insertend(struct node *head,int x){
 	struct node *p,*q;
@@ -91,16 +100,47 @@ struct node * insertend(struct node *head,int x){
 		p=p->next;
 	}
 	p->next=q;
+	q->prev=p;
+	
 	return head;
     }
 }
-struct node * delbeg(struct node *p,int x);
-struct node * delend(struct node *p,int x);
-struct node * delvalue(struct node *q,int x);
+struct node * delbeg(struct node *head){
+	struct node *p;
+	p=head;
+    head=head->next;
+    head->prev=NULL;
+	free(p); 
+	return head;	
+}
+struct node * delend(struct node *head){
+	struct node *p;
+	p=head;
+	while(p->next!=NULL)
+	{  
+		p=p->next;	
+	}
+	(p->prev)->next=NULL;
+	free(p);
+	return head;
+}
+struct node * delnode(struct node *head,int x){
+	struct node *p;
+	p=head;
+	while(p->info!=x)
+	{
+		p=p->next;
+	}
+	(p->prev)->next=p->next;
+	p->next=p->prev;
+	free(p);
+	return head;
+}
 struct node * getnode(int x){
 	struct node *q;
-	q = (struct node *) malloc(sizeof(struct node));
+	q = (struct node *)malloc(sizeof(struct node));
 	q->info=x;
 	q->next=NULL;
+	q->prev=NULL;
 	return q;
 }
