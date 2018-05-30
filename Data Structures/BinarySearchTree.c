@@ -359,25 +359,25 @@ struct node * mirrorimage(struct node * tree)
 struct node * search(struct node * tree,int x){
 	if(tree==NULL)
 	{return NULL;
-	}else if(tree->info==x){
+	}
+	 if(tree->info==x){
 		return tree;
-	}else if(x<tree->info)
+	}
+	if(x<tree->info)
 		return(search(tree->left,x));
-		else
+	if(x>tree->info)
 		return(search(tree->right,x));
-	
-	
 }
 struct node * del(struct node *tree,int x){
 	struct node *p,*q,*parentsuc,*suc,*parent;
 	parent=NULL;
-	if(tree=NULL)
+	if(tree==NULL)
 	{
 		printf("tree is empty");
 		return tree;
 	}
 	p=tree;
-	while(p!=NULL && p->info!=x)
+	while((p!=NULL)&& (p->info!=x))
 	{
 		parent=p;
 		p=((x<p->info)?p->left:p->right);
